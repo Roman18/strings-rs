@@ -4,17 +4,24 @@ use std::{
     io::Read,
 };
 
+use clap::Parser;
+
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    file_name: String,
+    #[arg(short, default_value = "4", help="Min length of string")]
+    n: usize,
+}
+
 fn main() -> Result<(), Box<dyn Error>>{
-    let args = std::env::args().collect::<Vec<_>>();
-    let file_name = match args.get(1){
-        Some(f) => f,
-        None => return Err("Usage: ./string-rs file.txt".into()),
-    };
+    let args = Args::parse();
     let mut data = Vec::new();
-    let mut fd = fs::File::open(file_name)?;
+    let mut fd = fs::File::open(args.file_name)?;
     let _ = fd.read_to_end(&mut data)?;
 
-    let min_len = 4;
+    let min_len = args.n;
     let mut start = 0;
     let mut end = start + min_len;
 
